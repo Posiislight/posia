@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='uploads/' + product.image) }}" alt="{{ product.name }}" class="img-fluid">
+            </div>
+            <div class="col-md-6">
+                <h2>{{ product.name }}</h2>
+                <h4 class="text-danger">{{ product.price }} ₦</h4>
+                <p>{{ product.description }}</p>
+                <button class="btn btn-primary">Add to Cart</button>
+                <button class="btn btn-danger">Add to Wishlist</button>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h3>Customer Reviews</h3>
+            <form method="POST">
+                <textarea class="form-control" name="review" rows="3" placeholder="Write your review..." required></textarea>
+                <button class="btn btn-success mt-2" type="submit">Submit Review</button>
+            </form>
+
+            <div class="mt-3">
+                {% for item in commented_by %}
+                    <div class="alert alert-secondary">{{ commented_by.item.review_content }}</div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

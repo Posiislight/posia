@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .cart-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-item .info {
+            margin-left: 20px;
+        }
+
+        .cart-item .info h5 {
+            margin: 0;
+        }
+
+        .cart-item .info p {
+            margin: 0;
+        }
+
+        .total-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        .checkout-btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar for Login & Sign Up -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">POSIA</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('index') }}">Back to Shopping</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger mx-2" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-success mx-2" href="{{ url_for('register') }}">Sign Up</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Your Cart</h2>
+        <div class="row">
+            {% if cart_items %}
+                <div class="col-md-12">
+                    <ul class="list-group">
+                        {% for item in cart_items %}
+                            <li class="list-group-item cart-item">
+                                <img src="{{ url_for('static', filename='uploads/' + item.product.image) }}" alt="{{ item.product.name }}">
+                                <div class="info">
+                                    <h5>{{ item.product.name }}</h5>
+                                    <form action="{{ url_for('update_cart', product_id=item.product_id) }}" method="POST" class="d-flex align-items-center">
+                                        <button type="submit" name="action" value="decrease" class="btn btn-sm btn-danger">-</button>
+                                        <span class="mx-2">{{ item.quantity }}</span>
+                                        <button type="submit" name="action" value="increase" class="btn btn-sm btn-success">+</button>
+                                    </form>
+                                    <p>Price: ₦{{ item.product.price }} each</p>
+                                    <p><strong>Total: ₦{{ item.product.price * item.quantity }}</strong></p>
+
+                                    <!-- Delete button -->
+                                    <form action="{{ url_for('delete_from_cart', product_id=item.product_id) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger">Remove from Cart</button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="total-price">
+                        <p><strong>Total Price: ₦{{ total_price }}</strong></p>
+                    </div>
+                    <!-- Checkout Button -->
+                    <div class="checkout-section">
+                        <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-lg checkout-btn">
+                            <i class="fa fa-shopping-cart"></i> Pay with Paystack
+                        </a>
+                        <a href="{{ url_for('flutterwave') }}" class="btn btn-primary btn-lg checkout-btn">
+                            <i class="fa fa-shopping-cart"></i> Pay with Flutter wave
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <p>Your cart is empty!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+</body>
+</html>
