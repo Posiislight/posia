@@ -1,10 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product.name }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Make both buttons identical in size and shape */
+        .btn-custom {
+            width: 100%; /* Make both buttons full width */
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px; /* Rounded corners */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px; /* Space between icon and text */
+            transition: 0.3s ease-in-out;
+        }
+
+        /* Add to Cart button (Bootstrap primary color) */
+        .btn-cart {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+
+        /* Add to Wishlist button (Red theme) */
+        .btn-wishlist {
+            background-color: #ff4d4d; /* Red */
+            color: white;
+            border: none;
+        }
+
+        /* Hover effects */
+        .btn-cart:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-wishlist:hover {
+            background-color: #e60000;
+        }
+
+        /* Ensure both buttons are aligned */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Space between buttons */
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-4">
@@ -16,8 +59,21 @@
                 <h2>{{ product.name }}</h2>
                 <h4 class="text-danger">{{ product.price }} ₦</h4>
                 <p>{{ product.description }}</p>
-                <button class="btn btn-primary">Add to Cart</button>
-                <button class="btn btn-danger">Add to Wishlist</button>
+                <div class="button-group">
+                    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                        <button type="submit" class="btn btn-custom btn-cart">
+                            <i class="fa fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </form>
+                
+                    <form action="{{ url_for('add_to_wishlist', product_id=product.id) }}" method="POST">
+                        <button type="submit" class="btn btn-custom btn-wishlist">
+                            <i class="fa fa-heart"></i> Add to Wishlist
+                        </button>
+                    </form>
+                </div>
+                
+                
             </div>
         </div>
 

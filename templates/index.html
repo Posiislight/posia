@@ -100,7 +100,14 @@
                         <li class="nav-item">
                             <a class="nav-link btn btn-danger mx-2" href="{{ url_for('logout') }}">Logout</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('index') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('chatbot') }}">Chatbot</a>
+                        </li>
                     {% else %}
+                        
                         <li class="nav-item">
                             <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('login') }}">Login</a>
                         </li>
@@ -111,6 +118,12 @@
                 </ul>
             </div>
         </div>
+        <form class="d-flex ms-3" action="{{ url_for('search') }}" method="POST">
+            <input class="form-control me-2" type="search" placeholder="Search products" name="search_item" required>
+            <button class="btn btn-outline-light" type="submit"><i class="fa fa-search"></i></button>
+        </form>
+    </div>
+</div>
     </nav>
 
     <div class="container mt-4">

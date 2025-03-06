@@ -1,4 +1,4 @@
-from flask import Flask,redirect,url_for,flash,render_template,request,jsonify
+from flask import Flask,redirect,url_for,flash,render_template,request,jsonify,Response
 from models import User,Product,Cart,Wishlist,Reviews,db
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_user,login_required,LoginManager,logout_user,current_user
@@ -8,6 +8,16 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/posia'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'supersecretkey'
+from llamaapi import LlamaAPI
+from dotenv import load_dotenv
+import os
+from openai import OpenAI
+import json
+
+client = OpenAI(base_url = "https://openrouter.ai/api/v1",api_key = "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")
+
+load_dotenv()
+api_key = os.getenv('TOGETHER_AI_API_KEY')
 db.init_app(app)
 login_manager = LoginManager(app)
 
@@ -165,6 +175,7 @@ def update_cart(product_id):
     return redirect(url_for('cart'))
 
 
+
 @app.route('/wishlist',methods = ['POST','GET'])
 @login_required
 def wishlist():
@@ -174,12 +185,12 @@ def wishlist():
 @app.route('/wishlist/add_to_wishlist/<int:product_id>',methods=['GET','POST'])
 @login_required
 def add_to_wishlist(product_id):
-    product = Product.query.get(product_id)
+    product = Product.query.get_or_404(product_id)
     existing_product = Wishlist.query.filter_by(user_id = current_user.id,product_id = product.id).first()
     if existing_product:
         flash('product already in wishlist')
-    new_product = Wishlist(user_id = current_user.id,product_id = product.id)
-    if new_product:
+    else:
+        new_product = Wishlist(user_id = current_user.id,product_id = product.id)
         flash('successfully added to wishlist')
         db.session.add(new_product)
         db.session.commit()
@@ -205,6 +216,55 @@ def product_view(product_id):
 def logout():
     logout_user()
     return(redirect(url_for('index')))
+
+@app.route('/search',methods=['POST','GET'])
+def search():
+    search_item = request.form.get('search_item',' ')
+    if search_item:
+        products = Product.query.filter(Product.name.like(f'%{search_item}%')).all()
+        return render_template('index.html',products = products)
+    else:
+        
+        return (redirect(url_for('index')))
+
+@app.route('/initialize/chatbot', methods=['POST','GET'])
+def chatbot():
+    chatbot_reply = None
+    if request.method == 'POST':
+        user_message = request.form.get('message')
+        
+        headers = {
+            "Authorization": "Bearer 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",
+            "Content-Type": "application/json"
+        }
+        
+        data = {
+            "model": "qwen/qwq-32b:free",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": user_message  # Use the actual user message
+                }
+            ]
+        }
+        
+        try:
+            response = requests.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers=headers,
+                json=data  # Use json parameter instead of data with json.dumps
+            )
+            
+            response_data = response.json()
+            print(response_data)  # Add this to debug the response structure
+            
+            # The correct structure for OpenRouter responses
+            chatbot_reply = response_data.get('choices', [{}])[0].get('message', {}).get('content', 'No response')
+        except Exception as e:
+            chatbot_reply = f"Error: {str(e)}"
+            print(f"Error: {str(e)}")
+            
+    return render_template('chatbot.html', chatbot_reply=chatbot_reply)
 
 if __name__ == '__main__':
     with app.app_context():
