@@ -1,140 +1,190 @@
-<html>
-    <head>
-        <title>CHATBOT</title>
-        <style>
-            /* Basic reset */
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHATBOT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-            /* Body and general styling */
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f7fc;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 0;
-            }
+        /* Body and general styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
 
-            /* Container for the chatbot form and reply */
-            .chat-container {
-                background-color: white;
-                border-radius: 8px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                padding: 20px;
-                width: 100%;
-                max-width: 500px;
-                text-align: center;
-            }
+        .navbar {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
 
-            /* Style the form elements */
+        /* Container for the chatbot form and reply */
+        .chat-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            margin: 100px auto;
+        }
+
+        /* Style the form elements */
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Style the chatbot reply */
+        h3 {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            word-wrap: break-word;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Flash message styling */
+        .flash-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            animation: fadeOut 5s ease-in-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Make sure the form looks good on smaller screens */
+        @media (max-width: 600px) {
             input[type="text"] {
-                width: 80%;
-                padding: 10px;
-                margin: 15px 0;
-                border: 2px solid #ccc;
-                border-radius: 5px;
-                font-size: 16px;
+                width: 100%;
             }
 
             button {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                font-size: 16px;
-                border-radius: 5px;
-                cursor: pointer;
+                width: 100%;
             }
-
-            button:hover {
-                background-color: #45a049;
-            }
-
-            /* Style the chatbot reply */
-            h3 {
-                margin-top: 20px;
-                font-size: 18px;
-                color: #333;
-                background-color: #f1f1f1;
-                padding: 10px;
-                border-radius: 5px;
-                word-wrap: break-word;
-                max-width: 90%;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            /* Make sure the form looks good on smaller screens */
-            @media (max-width: 600px) {
-                input[type="text"] {
-                    width: 100%;
-                }
-
-                button {
-                    width: 100%;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-                <a class="navbar-brand" href="#">POSIA</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <ul class="navbar-nav">
-                        {% if current_user.is_authenticated %}
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('cart') }}">Cart</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-outline-warning mx-2" href="{{ url_for('wishlist') }}">Wishlist</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-danger mx-2" href="{{ url_for('logout') }}">Logout</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('index') }}">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('chatbot') }}">Chatbot</a>
-                            </li>
-                        {% else %}
-                            
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('login') }}">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-success mx-2" href="{{ url_for('register') }}">Sign Up</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </div>
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar copied from first file -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">POSIA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('cart') }}">Cart</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-warning mx-2" href="{{ url_for('wishlist') }}">Wishlist</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-danger mx-2" href="{{ url_for('logout') }}">Logout</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('index') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('chatbot') }}">Chatbot</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light mx-2" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-success mx-2" href="{{ url_for('register') }}">Sign Up</a>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
-            <form class="d-flex ms-3" action="{{ url_for('search') }}" method="POST">
-                <input class="form-control me-2" type="search" placeholder="Search products" name="search_item" required>
-                <button class="btn btn-outline-light" type="submit"><i class="fa fa-search"></i></button>
-            </form>
         </div>
-    </div>
-        </nav>
-        <div class="chat-container">
-            <h2>POSI'S LITTLE BITCH</h2>
-            <form method="POST">
-                <input type="text" name="message" placeholder="Chat with me like a little bitch">
-                <button type="submit">Submit</button>
-            </form>
+        <form class="d-flex ms-3" action="{{ url_for('search') }}" method="POST">
+            <input class="form-control me-2" type="search" placeholder="Search products" name="search_item" required>
+            <button class="btn btn-outline-light" type="submit"><i class="fa fa-search"></i></button>
+        </form>
+    </nav>
 
-            {% if chatbot_reply %}
-                <h3>{{ chatbot_reply }}</h3>
-            {% endif %}
-        </div>
-    </body>
+    <!-- Flash Messages Section -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="mt-2">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} flash-message" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Chatbot container -->
+    <div class="chat-container">
+        <h2>POSI'S ASSISTANT</h2>
+        <form method="POST">
+            <input type="text" name="message" placeholder="How can I help you today?">
+            <button type="submit">Submit</button>
+        </form>
+
+        {% if chatbot_reply %}
+            <h3>{{ chatbot_reply }}</h3>
+        {% endif %}
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        setTimeout(() => {
+            let flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(msg => msg.style.display = 'none');
+        }, 5000);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
