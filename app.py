@@ -4,8 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_user,login_required,LoginManager,logout_user,current_user
 import requests
 import uuid
+from flask_migrate import Migrate
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost/posia'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:LDNXRuhyCFUIyJaDAACUtyqFPgQPrzQc@tramway.proxy.rlwy.net:45652/railway'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'supersecretkey'
@@ -20,10 +21,11 @@ client = OpenAI(base_url = "https://openrouter.ai/api/v1",api_key = "sk-or-v1-d2
 load_dotenv()
 api_key = os.getenv('TOGETHER_AI_API_KEY')
 db.init_app(app)
+
 login_manager = LoginManager(app)
 
 login_manager.login_view = 'login'
-
+migrate = Migrate(app, db)
 @login_manager.user_loader
 def load_user(user_id):
     if user_id is None or user_id == None:
@@ -269,5 +271,5 @@ def chatbot():
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+        
+        app.run(debug=True)
