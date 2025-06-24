@@ -5,7 +5,8 @@ from flask_login import login_user,login_required,LoginManager,logout_user,curre
 import requests
 import uuid
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/posia'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost/posia'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'supersecretkey'
 from llamaapi import LlamaAPI
